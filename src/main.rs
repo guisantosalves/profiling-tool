@@ -1,5 +1,5 @@
-
-mod server;
+pub mod server;
+pub mod collector;
 
 #[tokio::main] // macro que transforma o main em async
 async fn main() {

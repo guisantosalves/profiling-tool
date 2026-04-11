@@ -72,3 +72,43 @@ Protocolo é um conjunto de regras que define como dois lados se comunicam.
 - HTTP — regras pra "peço algo, você responde" (browser pede página, servidor responde)
 - WebSocket — regras pra "abrimos um canal e ambos mandam mensagens quando quiserem"
 - TCP — regras pra garantir que os dados chegam na ordem certa
+
+## processos x threads
+
+O SO tem muito mais threads do que núcleos. Tipo: sua máquina tem 16 slots lógicos, mas no Task Manager deve ter
+milhares de threads rodando (soma tudo dos processos).
+
+Como isso funciona? O SO dá a cada thread um pequeno intervalo de tempo (tipo 10-20 milissegundos, chamado time
+slice). Quando acaba:
+
+1. SO pausa a thread (salva o estado dela: registradores, program counter, etc)
+2. SO escolhe outra thread da fila
+3. SO restaura o estado dela
+4. Thread roda por mais um time slice
+
+Isso acontece milhares de vezes por segundo, tão rápido que parece que tudo roda ao mesmo tempo.
+
+---
+
+Analogia: o processo é uma casa, as threads são as pessoas dentro dela. Todas compartilham os móveis (memória), mas
+cada uma faz suas tarefas.
+
+## passagem por valor x referencia
+
+- Passagem por valor → valor (sem &) → copia/move o dado
+- Passagem por referência → &valor → empresta (passa o endereço)
+
+Em Rust, passar valor sem & pode fazer duas coisas dependendo do tipo:
+
+- Tipos Copy (inteiros, floats, bool): copia o valor
+- Tipos não-Copy (String, Vec, structs): move o ownership (a variável original deixa de existir)
+
+  let s = String::from("hello");
+  fn take(s: String) { ... }
+  take(s); // s é MOVIDO pra dentro da função
+  // println!("{}", s); // ❌ erro, s não existe mais
+
+  fn borrow(s: &String) { ... }
+  let s2 = String::from("world");
+  borrow(&s2); // s2 é emprestado
+  println!("{}", s2); // ✅ ok, s2 ainda existe

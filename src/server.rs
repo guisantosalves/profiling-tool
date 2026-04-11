@@ -1,21 +1,22 @@
 use axum::{
     Json,
     Router,
-    extract::ws::{ Message, WebSocket, WebSocketUpgrade },
-    response::Response,
-    routing::get,
+    extract::{ Path, ws::{ Message, WebSocket, WebSocketUpgrade } },
+    http::StatusCode,
+    routing::{get, post},
 };
+use sysinfo::{ Pid, System };
 use tokio::time::{ interval, Duration };
 use crate::collector;
+use tower_http::services::ServeDir;
 
 pub async fn start() {
     let app = Router::new()
-        .route(
-            "/",
-            get(|| async { "Hello From system profiler!" })
-        )
         .route("/stats", get(get_stats))
-        .route("/ws", get(ws_handler));
+        .route("/ws", get(ws_handler))
+        // O ServeDir recebe o "resto da URL" depois do prefixo e procura o arquivo correspondente na pasta.
+        .route("/process/{pid}/kill", post(kill_process_handler))
+        .fallback_service(ServeDir::new("static"));
 
     let listener = tokio::net::TcpListener
         ::bind("0.0.0.0:3000").await
@@ -26,6 +27,19 @@ pub async fn start() {
 
 async fn get_stats() -> Json<collector::SystemStats> {
     Json(collector::collect())
+}
+
+async fn kill_process_handler(Path(pid): Path<u32>) -> StatusCode {
+    let mut sys = System::new();
+
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+
+    match sys.process(Pid::from_u32(pid)) {
+        Some(process) => {
+            if process.kill() { StatusCode::OK } else { StatusCode::FORBIDDEN }
+        }
+        None => StatusCode::NOT_FOUND,
+    }
 }
 
 async fn handle_socket(mut socket: WebSocket) {

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Profiler</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <h1>System Profiler</h1>
+      </div>
+      <div class="system-info">
+        <div><span class="label">Host</span><span id="host-name">—</span></div>
+        <div><span class="label">OS</span><span id="os-name">—</span></div>
+        <div><span class="label">Kernel</span><span id="kernel-version">—</span></div>
+        <div><span class="label">Uptime</span><span id="uptime">—</span></div>
+        <div class="status"><span id="ws-status" class="dot"></span><span id="ws-label">conectando...</span></div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card card-cpu">
+        <div class="card-header">
+          <h2>CPU</h2>
+          <span class="subtitle" id="cpu-meta">—</span>
+        </div>
+        <div class="big-metric">
+          <span id="cpu-global">0</span><span class="unit">%</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="cpu-bar"></div>
+        </div>
+        <div class="cores" id="cpu-cores"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Memória</h2>
+          <span class="subtitle" id="mem-meta">—</span>
+        </div>
+        <div class="big-metric">
+          <span id="mem-percent">0</span><span class="unit">%</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="mem-bar"></div>
+        </div>
+        <div class="sub-metric">
+          <h3>Swap</h3>
+          <div class="bar">
+            <div class="bar-fill" id="swap-bar"></div>
+          </div>
+          <span class="subtitle" id="swap-meta">—</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Discos</h2>
+        </div>
+        <div id="disks-list" class="disks-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Temperatura</h2>
+        </div>
+        <div class="big-metric">
+          <span id="temperature">—</span><span class="unit" id="temperature-unit"></span>
+        </div>
+        <p class="subtitle">Maior sensor detectado</p>
+      </section>
+
+      <section class="card card-processes">
+        <div class="card-header">
+          <h2>Top Processos</h2>
+          <div class="proc-controls">
+            <input id="proc-search" type="text" placeholder="Filtrar por nome ou PID..." autocomplete="off" />
+            <button id="proc-pause" class="btn-pause" title="Pausar atualizações">⏸</button>
+            <span class="subtitle" id="proc-count">Top 20 por CPU</span>
+          </div>
+        </div>
+        <table class="proc-table">
+          <thead>
+            <tr>
+              <th>PID</th>
+              <th>Nome</th>
+              <th class="num">CPU %</th>
+              <th class="num">Memória</th>
+              <th class="num">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="proc-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
